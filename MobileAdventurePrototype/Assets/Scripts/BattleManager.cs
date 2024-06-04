@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public enum BattleState
 {
@@ -46,7 +47,7 @@ public class BattleManager : MonoBehaviour
     // Start is called before the first frame update
     private void Start()
     {
-        
+        TouchManager.Instance.touchPressAction.performed += ProcessTouchInputPress;
     }
 
     // Update is called once per frame
@@ -55,10 +56,10 @@ public class BattleManager : MonoBehaviour
         switch (state)
         {
             case BattleState.WAITING_FOR_START:
-                if (Input.anyKeyDown)
-                {
-                    StartBattle();
-                }
+                //if (Input.anyKeyDown)
+                //{
+                //    StartBattle();
+                //}
                 break;
 
             case BattleState.COUNTING_DOWN_TO_START:
@@ -75,8 +76,20 @@ public class BattleManager : MonoBehaviour
                     state = BattleState.BATTLING;
                 }
                 break;
+            case BattleState.BATTLING:
+                break;
             default:
                 Debug.LogError("Invalid/undefined BattleManager state");
+                break;
+        }
+    }
+
+    public void ProcessTouchInputPress(InputAction.CallbackContext context)
+    {
+        switch (state)
+        {
+            case BattleState.WAITING_FOR_START:
+                StartBattle();
                 break;
         }
     }
