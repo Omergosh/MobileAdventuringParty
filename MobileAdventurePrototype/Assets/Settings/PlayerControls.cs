@@ -46,7 +46,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
-                    ""name"": ""Hold"",
+                    ""name"": ""TouchHold"",
                     ""type"": ""Value"",
                     ""id"": ""a3f173fd-dd76-4c29-add9-3be62970c1ff"",
                     ""expectedControlType"": """",
@@ -55,7 +55,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Move"",
+                    ""name"": ""TouchPointMove"",
                     ""type"": ""Value"",
                     ""id"": ""7b1164ee-1cb5-43ed-9694-347e50edb8ba"",
                     ""expectedControlType"": ""Vector2"",
@@ -69,10 +69,10 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""name"": """",
                     ""id"": ""f2f32326-1d61-4f54-a8e5-3c000a87e732"",
                     ""path"": ""<Touchscreen>/primaryTouch/press"",
-                    ""interactions"": """",
+                    ""interactions"": ""Hold"",
                     ""processors"": """",
                     ""groups"": ""MobileControls"",
-                    ""action"": ""Hold"",
+                    ""action"": ""TouchHold"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -105,7 +105,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""MobileControls"",
-                    ""action"": ""Move"",
+                    ""action"": ""TouchPointMove"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -158,8 +158,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_BattleControls = asset.FindActionMap("BattleControls", throwIfNotFound: true);
         m_BattleControls_TouchPosition = m_BattleControls.FindAction("TouchPosition", throwIfNotFound: true);
         m_BattleControls_TouchPress = m_BattleControls.FindAction("TouchPress", throwIfNotFound: true);
-        m_BattleControls_Hold = m_BattleControls.FindAction("Hold", throwIfNotFound: true);
-        m_BattleControls_Move = m_BattleControls.FindAction("Move", throwIfNotFound: true);
+        m_BattleControls_TouchHold = m_BattleControls.FindAction("TouchHold", throwIfNotFound: true);
+        m_BattleControls_TouchPointMove = m_BattleControls.FindAction("TouchPointMove", throwIfNotFound: true);
         // MenuControls
         m_MenuControls = asset.FindActionMap("MenuControls", throwIfNotFound: true);
         m_MenuControls_Newaction = m_MenuControls.FindAction("New action", throwIfNotFound: true);
@@ -226,16 +226,16 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private List<IBattleControlsActions> m_BattleControlsActionsCallbackInterfaces = new List<IBattleControlsActions>();
     private readonly InputAction m_BattleControls_TouchPosition;
     private readonly InputAction m_BattleControls_TouchPress;
-    private readonly InputAction m_BattleControls_Hold;
-    private readonly InputAction m_BattleControls_Move;
+    private readonly InputAction m_BattleControls_TouchHold;
+    private readonly InputAction m_BattleControls_TouchPointMove;
     public struct BattleControlsActions
     {
         private @PlayerControls m_Wrapper;
         public BattleControlsActions(@PlayerControls wrapper) { m_Wrapper = wrapper; }
         public InputAction @TouchPosition => m_Wrapper.m_BattleControls_TouchPosition;
         public InputAction @TouchPress => m_Wrapper.m_BattleControls_TouchPress;
-        public InputAction @Hold => m_Wrapper.m_BattleControls_Hold;
-        public InputAction @Move => m_Wrapper.m_BattleControls_Move;
+        public InputAction @TouchHold => m_Wrapper.m_BattleControls_TouchHold;
+        public InputAction @TouchPointMove => m_Wrapper.m_BattleControls_TouchPointMove;
         public InputActionMap Get() { return m_Wrapper.m_BattleControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -251,12 +251,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @TouchPress.started += instance.OnTouchPress;
             @TouchPress.performed += instance.OnTouchPress;
             @TouchPress.canceled += instance.OnTouchPress;
-            @Hold.started += instance.OnHold;
-            @Hold.performed += instance.OnHold;
-            @Hold.canceled += instance.OnHold;
-            @Move.started += instance.OnMove;
-            @Move.performed += instance.OnMove;
-            @Move.canceled += instance.OnMove;
+            @TouchHold.started += instance.OnTouchHold;
+            @TouchHold.performed += instance.OnTouchHold;
+            @TouchHold.canceled += instance.OnTouchHold;
+            @TouchPointMove.started += instance.OnTouchPointMove;
+            @TouchPointMove.performed += instance.OnTouchPointMove;
+            @TouchPointMove.canceled += instance.OnTouchPointMove;
         }
 
         private void UnregisterCallbacks(IBattleControlsActions instance)
@@ -267,12 +267,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @TouchPress.started -= instance.OnTouchPress;
             @TouchPress.performed -= instance.OnTouchPress;
             @TouchPress.canceled -= instance.OnTouchPress;
-            @Hold.started -= instance.OnHold;
-            @Hold.performed -= instance.OnHold;
-            @Hold.canceled -= instance.OnHold;
-            @Move.started -= instance.OnMove;
-            @Move.performed -= instance.OnMove;
-            @Move.canceled -= instance.OnMove;
+            @TouchHold.started -= instance.OnTouchHold;
+            @TouchHold.performed -= instance.OnTouchHold;
+            @TouchHold.canceled -= instance.OnTouchHold;
+            @TouchPointMove.started -= instance.OnTouchPointMove;
+            @TouchPointMove.performed -= instance.OnTouchPointMove;
+            @TouchPointMove.canceled -= instance.OnTouchPointMove;
         }
 
         public void RemoveCallbacks(IBattleControlsActions instance)
@@ -349,8 +349,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     {
         void OnTouchPosition(InputAction.CallbackContext context);
         void OnTouchPress(InputAction.CallbackContext context);
-        void OnHold(InputAction.CallbackContext context);
-        void OnMove(InputAction.CallbackContext context);
+        void OnTouchHold(InputAction.CallbackContext context);
+        void OnTouchPointMove(InputAction.CallbackContext context);
     }
     public interface IMenuControlsActions
     {

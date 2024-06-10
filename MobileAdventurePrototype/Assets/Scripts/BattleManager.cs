@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,14 @@ public enum BattleState
     COUNTING_DOWN_TO_NEXT_WAVE,
     ENDING,
     ENDED,
+}
+
+public enum ControlContextState
+{
+    NONE,
+    MOVING,
+    AIMING,
+    MENU,
 }
 
 public class BattleManager : MonoBehaviour
@@ -29,7 +38,8 @@ public class BattleManager : MonoBehaviour
     public List<AdventurerScript> adventurers;
     public List<EnemyScript> enemies;
 
-    public BattleState state;
+    public BattleState battleState;
+    public ControlContextState controlState;
 
     public float countdownTimer;
     public float countdownTimerMax = 3;
@@ -38,22 +48,32 @@ public class BattleManager : MonoBehaviour
     public float waveTimer;
     public float waveTimerMax = 5;
 
+    public const string TAG_ADVENTURER = "Player";
+    public const string TAG_ENEMY = "Enemy";
+
+    public int selectedAdventurerIndex;
+    [SerializeField] private LayerMask selectableFieldEntities;
+
     private void Awake()
     {
         Instance = this;
-        state = BattleState.WAITING_FOR_START;
+        battleState = BattleState.WAITING_FOR_START;
     }
 
-    // Start is called before the first frame update
-    private void Start()
+    private void OnEnable()
     {
-        TouchManager.Instance.touchPressAction.performed += ProcessTouchInputPress;
+        TouchManager.Instance.OnTouchPress += ProcessTouchInputPress;
+    }
+
+    private void OnDisable()
+    {
+        TouchManager.Instance.OnTouchPress -= ProcessTouchInputPress;
     }
 
     // Update is called once per frame
     private void Update()
     {
-        switch (state)
+        switch (battleState)
         {
             case BattleState.WAITING_FOR_START:
                 //if (Input.anyKeyDown)
@@ -66,14 +86,14 @@ public class BattleManager : MonoBehaviour
                 countdownTimer -= Time.deltaTime;
                 if(countdownTimer <= 0f)
                 {
-                    state = BattleState.BATTLING;
+                    battleState = BattleState.BATTLING;
                 }
                 break;
             case BattleState.COUNTING_DOWN_TO_NEXT_WAVE:
                 waveTimer -= Time.deltaTime;
                 if(waveTimer <= 0f)
                 {
-                    state = BattleState.BATTLING;
+                    battleState = BattleState.BATTLING;
                 }
                 break;
             case BattleState.BATTLING:
@@ -84,22 +104,32 @@ public class BattleManager : MonoBehaviour
         }
     }
 
-    public void ProcessTouchInputPress(InputAction.CallbackContext context)
+
+    private void ProcessTouchInputPress(object sender, EventArgs e)
     {
-        switch (state)
+        switch (battleState)
         {
             case BattleState.WAITING_FOR_START:
                 StartBattle();
+                break;
+            case BattleState.BATTLING:
+                Vector3 newPosition = TouchManager.Instance.GetTouchPosition();
+                Collider2D[] pressedAdventurers = Physics2D.OverlapPointAll(newPosition, selectableFieldEntities);
+                if (pressedAdventurers.Length > 0) { Debug.Log("tapped add"); }
+
+                newPosition.z = adventurers[selectedAdventurerIndex].transform.position.z;
+                //adventurers[selectedAdventurerIndex].transform.position = newPosition;
+                adventurers[selectedAdventurerIndex].SetMoveTargetPosition(newPosition);
                 break;
         }
     }
 
     public void StartBattle()
     {
-        if(state == BattleState.WAITING_FOR_START)
+        if(battleState == BattleState.WAITING_FOR_START)
         {
             countdownTimer = countdownTimerMax;
-            state = BattleState.COUNTING_DOWN_TO_START;
+            battleState = BattleState.COUNTING_DOWN_TO_START;
         }
     }
 }
