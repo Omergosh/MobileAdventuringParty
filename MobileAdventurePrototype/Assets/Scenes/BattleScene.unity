@@ -205,7 +205,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c58f99738f734c644a174c8df4f76f3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hurtBox: {fileID: 0}
+  hurtBox: {fileID: 1941439815}
   speed: 3
   velocity: {x: 0, y: 0}
   dashType: 2
@@ -716,7 +716,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 87741f80a0e237e47b12609a947bc0c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hurtBox: {fileID: 0}
+  hurtBox: {fileID: 2004678272}
   speed: 3
   velocity: {x: 0, y: 0}
 --- !u!1 &872993841
@@ -1051,7 +1051,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 17b32b791aa04e84c949aa0199fff565, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hurtBox: {fileID: 0}
+  hurtBox: {fileID: 872993844}
   speed: 3
   velocity: {x: 0, y: 0}
   dashType: 1
@@ -1371,6 +1371,8 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
+  swipeStartPoint: {x: 0, y: 0}
+  swipeEndPoint: {x: 0, y: 0}
 --- !u!1 &1355118653
 GameObject:
   m_ObjectHideFlags: 0
