@@ -14,8 +14,8 @@ public abstract class AdventurerScript : CreatureScript
 {
     public DashType dashType;
     protected float dashCooldownMax = 2f; // time after dash before another dash can occur. AKA dash cooldown max
-    protected float dashSpeed = 10f;
-    protected float dashDuration = 0.4f; //dashTimeSpentAtMaxSpeed
+    protected float dashSpeed = 8f;
+    protected float dashDuration = 0.3f; //dashTimeSpentAtMaxSpeed
     protected float dashTimeCurrent; //dashTimeSpentAtMaxSpeed
 
     // TEST CODE
@@ -34,9 +34,9 @@ public abstract class AdventurerScript : CreatureScript
             testTimeUntilDash -= Time.deltaTime;
             if (testTimeUntilDash < 0)
             {
-                Vector2 testDirection = RandomValues.RandomDirection2();
-                Debug.Log(testDirection);
-                Dash(testDirection);
+                //Vector2 testDirection = RandomValues.RandomDirection2();
+                //Debug.Log(testDirection);
+                //Dash(testDirection);
             }
         }
     }
@@ -58,6 +58,10 @@ public abstract class AdventurerScript : CreatureScript
                 velocity = Vector2.zero;
             }
         }
+        else
+        {
+            dashTimeCurrent = 0f;
+        }
     }
 
     public virtual bool Dash(Vector2 dashDirection)
@@ -68,6 +72,20 @@ public abstract class AdventurerScript : CreatureScript
         dashTimeCurrent = dashDuration;
         velocity = dashDirection.normalized * dashSpeed;
 
-        return false;
+        return true;
+    }
+
+    public virtual bool TryDash(Vector2 dashDirection)
+    {
+        // (guard clauses) //
+        // Check if unit is on universal cooldown
+        if(globalActionCooldownCurrent > 0f) { return false; }
+        // Check if unit is currently already dashing
+        if(dashTimeCurrent > 0f && currentState == CreatureAction.DASHING) { return false; }
+
+        // Defeated the guard clauses!
+        // Now Dash!
+        Dash(dashDirection);
+        return true;
     }
 }

@@ -206,9 +206,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hurtBox: {fileID: 1941439815}
-  speed: 3
+  moveSpeed: 3
+  attackSpeed: 1
+  globalActionCooldownCurrent: 0
+  attackCooldownCurrent: 0
   velocity: {x: 0, y: 0}
+  currentLivingStatus: 0
+  currentState: 0
   dashType: 2
+  testTimeUntilDash: 1
 --- !u!1 &284372106
 GameObject:
   m_ObjectHideFlags: 0
@@ -349,6 +355,7 @@ GameObject:
   m_Component:
   - component: {fileID: 402966745}
   - component: {fileID: 402966744}
+  - component: {fileID: 402966746}
   m_Layer: 3
   m_Name: CasterSprite
   m_TagString: Untagged
@@ -423,6 +430,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 252039123}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &402966746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 402966743}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e656f65cfcff58499f79dc2e4489725, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
@@ -717,8 +736,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hurtBox: {fileID: 2004678272}
-  speed: 3
+  moveSpeed: 3
+  attackSpeed: 1
+  globalActionCooldownCurrent: 0
+  attackCooldownCurrent: 0
   velocity: {x: 0, y: 0}
+  currentLivingStatus: 0
+  currentState: 0
 --- !u!1 &872993841
 GameObject:
   m_ObjectHideFlags: 0
@@ -1052,9 +1076,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hurtBox: {fileID: 872993844}
-  speed: 3
+  moveSpeed: 3
+  attackSpeed: 1
+  globalActionCooldownCurrent: 0
+  attackCooldownCurrent: 0
   velocity: {x: 0, y: 0}
+  currentLivingStatus: 0
+  currentState: 0
   dashType: 1
+  testTimeUntilDash: 1
 --- !u!1 &1188574103
 GameObject:
   m_ObjectHideFlags: 0
@@ -1193,6 +1223,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1198131170}
   - component: {fileID: 1198131169}
+  - component: {fileID: 1198131171}
   m_Layer: 3
   m_Name: DefenderSprite
   m_TagString: Untagged
@@ -1267,6 +1298,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1053910970}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1198131171
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1198131168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e656f65cfcff58499f79dc2e4489725, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1213144081
 GameObject:
   m_ObjectHideFlags: 0
@@ -1353,8 +1396,17 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
-  touchHoldAction:
+  touchTapAction:
     m_Name: 
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 3c8ac8ca-5b43-4c73-823a-94113b2abf64
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  touchHoldAction:
+    m_Name: Touch Hold
     m_Type: 0
     m_ExpectedControlType: 
     m_Id: 99debf99-5d7f-45b0-86ff-878fce7141a2
@@ -1363,7 +1415,7 @@ MonoBehaviour:
     m_SingletonActionBindings: []
     m_Flags: 0
   touchPointMoveAction:
-    m_Name: 
+    m_Name: Touch Point Move
     m_Type: 0
     m_ExpectedControlType: 
     m_Id: f21a3504-cb2e-401d-a063-6ad55d5369ac
@@ -1532,6 +1584,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   adventurers:
   - {fileID: 1691630058}
+  - {fileID: 252039125}
+  - {fileID: 1053910972}
   enemies:
   - {fileID: 774330756}
   battleState: 0
@@ -1763,9 +1817,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hurtBox: {fileID: 1666718952}
-  speed: 3
+  moveSpeed: 3
+  attackSpeed: 1
+  globalActionCooldownCurrent: 0
+  attackCooldownCurrent: 0
   velocity: {x: 0, y: 0}
+  currentLivingStatus: 0
+  currentState: 0
   dashType: 0
+  testTimeUntilDash: 1
 --- !u!1 &1729971300
 GameObject:
   m_ObjectHideFlags: 0
@@ -1776,6 +1836,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1729971302}
   - component: {fileID: 1729971301}
+  - component: {fileID: 1729971303}
   m_Layer: 3
   m_Name: AttackerSprite
   m_TagString: Untagged
@@ -1850,6 +1911,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1691630056}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1729971303
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1729971300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2e656f65cfcff58499f79dc2e4489725, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1761724631
 GameObject:
   m_ObjectHideFlags: 0

@@ -92,7 +92,7 @@ public abstract class CreatureScript : MonoBehaviour, IHasHealthComponent
 
     protected void MoveTowardsUpdate()
     {
-        if (movingTowardsTarget)
+        if (movingTowardsTarget && currentState == CreatureAction.MOVING_TO_POSITION)
         {
             MoveTowardsTargetPosition();
             if (Vector2.Distance(transform.position, targetPosition) < 0.05f)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -58,16 +59,106 @@ public class BattleManager : MonoBehaviour
     {
         Instance = this;
         battleState = BattleState.WAITING_FOR_START;
+        controlState = ControlContextState.NONE;
     }
 
     private void OnEnable()
     {
-        TouchManager.Instance.OnTouchPress += ProcessTouchInputPress;
+        //TouchManager.Instance.OnTouchPress += ProcessTouchInputPress;
+        TouchManager.Instance.OnTouchStart += TouchManager_OnTouchStart;
+        TouchManager.Instance.OnTap += TouchManager_OnTap;
+        TouchManager.Instance.OnHoldStart += TouchManager_OnHoldStart;
+        TouchManager.Instance.OnTouchEnd += TouchManager_OnTouchEnd;
+        TouchManager.Instance.OnSwipe += TouchManager_OnSwipe;
+
+    }
+
+    private void TouchManager_OnSwipe(object sender, EventArgs e)
+    {
+        // Player just swiped!
+        switch (battleState)
+        {
+            case BattleState.BATTLING:
+                // Selected adventurer attempts to dash
+                Debug.Log("swipe adv");
+                adventurers[selectedAdventurerIndex].TryDash(TouchManager.Instance.GetSwipeDirection());
+                break;
+        }
+    }
+
+    private void TouchManager_OnTouchEnd(object sender, EventArgs e)
+    {
+        
+    }
+
+    private void TouchManager_OnHoldStart(object sender, EventArgs e)
+    {
+        
+    }
+
+    private void TouchManager_OnTap(object sender, EventArgs e)
+    {
+        switch (battleState)
+        {
+            case BattleState.WAITING_FOR_START:
+                StartBattle();
+                break;
+            case BattleState.BATTLING:
+                // Select adventurer if they were tapped on!
+                Vector3 newPosition = TouchManager.Instance.GetTouchPosition();
+                Collider2D[] pressedAdventurers = Physics2D.OverlapPointAll(newPosition, selectableFieldEntities);
+                pressedAdventurers = pressedAdventurers.Where(col => col.gameObject.GetComponent<AdventurerScript>() != null).ToArray();
+                if (pressedAdventurers.Length > 0)
+                {
+                    Debug.Log("tapped adv");
+
+                    pressedAdventurers = pressedAdventurers.OrderByDescending(
+                        col => Vector2.Distance(newPosition, col.gameObject.transform.position)
+                        )
+                        .Reverse()
+                        .ToArray();
+
+                    // Attempt to select closest adventurer tapped on
+                    selectedAdventurerIndex = adventurers.IndexOf(pressedAdventurers[0].gameObject.GetComponent<AdventurerScript>());
+                    Debug.Log($"selected adventurer #{selectedAdventurerIndex}!");
+                }
+                else
+                {
+                    // No new adventurer selected.
+                    // Move currently selected adventurer to target location!
+                    newPosition.z = adventurers[selectedAdventurerIndex].transform.position.z;
+                    adventurers[selectedAdventurerIndex].SetMoveTargetPosition(newPosition);
+                    break;
+                }
+                break;
+        }
+    }
+
+    private void TouchManager_OnTouchStart(object sender, EventArgs e)
+    {
+        // Player just started touching the screen
+        switch (battleState)
+        {
+            case BattleState.WAITING_FOR_START:
+                StartBattle();
+                break;
+
+            //case BattleState.BATTLING:
+            //    // Check if current touch started on top of the selected adventurer
+            //    Vector3 newPosition = TouchManager.Instance.GetTouchPosition();
+            //    Collider2D[] pressedAdventurers = Physics2D.OverlapPointAll(newPosition, selectableFieldEntities);
+            //    if (pressedAdventurers.Length > 0) { Debug.Log("tapped adv"); }
+
+            //    newPosition.z = adventurers[selectedAdventurerIndex].transform.position.z;
+            //    //adventurers[selectedAdventurerIndex].transform.position = newPosition;
+            //    adventurers[selectedAdventurerIndex].SetMoveTargetPosition(newPosition);
+            //    break;
+        }
     }
 
     private void OnDisable()
     {
-        TouchManager.Instance.OnTouchPress -= ProcessTouchInputPress;
+        //TouchManager.Instance.OnTouchPress -= ProcessTouchInputPress;
     }
 
     // Update is called once per frame
