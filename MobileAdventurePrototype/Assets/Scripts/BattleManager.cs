@@ -28,6 +28,11 @@ public class BattleManager : MonoBehaviour
 {
     public static BattleManager Instance;
 
+    public event EventHandler<OnSelectedAdventurerChangedEventArgs> OnSelectedAdventurerChanged;
+    public class OnSelectedAdventurerChangedEventArgs : EventArgs { public AdventurerScript adventurer; }
+    public event EventHandler OnCountdownStart;
+    public event EventHandler OnCountdownEnd;
+
     private int lastHitboxID;
 
     public static int GetNewHitboxID()
@@ -88,12 +93,12 @@ public class BattleManager : MonoBehaviour
 
     private void TouchManager_OnTouchEnd(object sender, EventArgs e)
     {
-        
+
     }
 
     private void TouchManager_OnHoldStart(object sender, EventArgs e)
     {
-        
+
     }
 
     private void TouchManager_OnTap(object sender, EventArgs e)
@@ -121,6 +126,7 @@ public class BattleManager : MonoBehaviour
                     // Attempt to select closest adventurer tapped on
                     selectedAdventurerIndex = adventurers.IndexOf(pressedAdventurers[0].gameObject.GetComponent<AdventurerScript>());
                     Debug.Log($"selected adventurer #{selectedAdventurerIndex}!");
+                    OnSelectedAdventurerChanged?.Invoke(this, new OnSelectedAdventurerChangedEventArgs { adventurer = adventurers[selectedAdventurerIndex] });
                 }
                 else
                 {
@@ -143,16 +149,16 @@ public class BattleManager : MonoBehaviour
                 StartBattle();
                 break;
 
-            //case BattleState.BATTLING:
-            //    // Check if current touch started on top of the selected adventurer
-            //    Vector3 newPosition = TouchManager.Instance.GetTouchPosition();
-            //    Collider2D[] pressedAdventurers = Physics2D.OverlapPointAll(newPosition, selectableFieldEntities);
-            //    if (pressedAdventurers.Length > 0) { Debug.Log("tapped adv"); }
+                //case BattleState.BATTLING:
+                //    // Check if current touch started on top of the selected adventurer
+                //    Vector3 newPosition = TouchManager.Instance.GetTouchPosition();
+                //    Collider2D[] pressedAdventurers = Physics2D.OverlapPointAll(newPosition, selectableFieldEntities);
+                //    if (pressedAdventurers.Length > 0) { Debug.Log("tapped adv"); }
 
-            //    newPosition.z = adventurers[selectedAdventurerIndex].transform.position.z;
-            //    //adventurers[selectedAdventurerIndex].transform.position = newPosition;
-            //    adventurers[selectedAdventurerIndex].SetMoveTargetPosition(newPosition);
-            //    break;
+                //    newPosition.z = adventurers[selectedAdventurerIndex].transform.position.z;
+                //    //adventurers[selectedAdventurerIndex].transform.position = newPosition;
+                //    adventurers[selectedAdventurerIndex].SetMoveTargetPosition(newPosition);
+                //    break;
         }
     }
 
@@ -175,14 +181,15 @@ public class BattleManager : MonoBehaviour
 
             case BattleState.COUNTING_DOWN_TO_START:
                 countdownTimer -= Time.deltaTime;
-                if(countdownTimer <= 0f)
+                if (countdownTimer <= 0f)
                 {
                     battleState = BattleState.BATTLING;
+                    OnCountdownEnd?.Invoke(this, EventArgs.Empty);
                 }
                 break;
             case BattleState.COUNTING_DOWN_TO_NEXT_WAVE:
                 waveTimer -= Time.deltaTime;
-                if(waveTimer <= 0f)
+                if (waveTimer <= 0f)
                 {
                     battleState = BattleState.BATTLING;
                 }
@@ -217,10 +224,15 @@ public class BattleManager : MonoBehaviour
 
     public void StartBattle()
     {
-        if(battleState == BattleState.WAITING_FOR_START)
+        if (battleState == BattleState.WAITING_FOR_START)
         {
             countdownTimer = countdownTimerMax;
             battleState = BattleState.COUNTING_DOWN_TO_START;
+            OnCountdownStart?.Invoke(this, EventArgs.Empty);
         }
     }
+
+    public AdventurerScript GetSelectedAdventurer => adventurers[selectedAdventurerIndex];
+    public bool IsSelectedAdventurer(AdventurerScript adventurer) => adventurers.Contains(adventurer);
+
 }

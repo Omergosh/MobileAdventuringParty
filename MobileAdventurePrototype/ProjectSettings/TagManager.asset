@@ -39,6 +39,12 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: SelectionUI
+    uniqueID: 855635937
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: TargetUI
+    uniqueID: 1377682547
     locked: 0
