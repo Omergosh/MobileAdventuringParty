@@ -10,6 +10,8 @@ public class BattleUIManager : MonoBehaviour
     [SerializeField] Image fullscreenOverlay;
     [SerializeField] TMP_Text countdownText;
 
+    [SerializeField] Transform moveTargetIndicatorPrefab;
+
     private bool countdownStarted = false;
     private bool countdownFinished = false;
 
@@ -20,7 +22,20 @@ public class BattleUIManager : MonoBehaviour
         countdownText.gameObject.SetActive(true);
 
         BattleManager.Instance.OnCountdownStart += BattleManager_OnCountdownStart;
+        BattleManager.Instance.OnCommandAdventurerMove += BattleManager_OnCommandAdventurerMove;
+        //BattleManager.Instance.OnSelectedAdventurerChanged += BattleManager_OnSelectedAdventurerChanged;
     }
+
+    private void BattleManager_OnCommandAdventurerMove(object sender, BattleManager.OnCommandAdventurerMoveEventArgs e)
+    {
+        Transform moveTargetIndicatorGO = Instantiate(moveTargetIndicatorPrefab, e.targetPosition, Quaternion.identity);
+        //Transform moveTargetIndicatorScript = moveTargetIndicatorGO.GetComponent<>
+    }
+
+    //private void BattleManager_OnSelectedAdventurerChanged(object sender, BattleManager.OnSelectedAdventurerChangedEventArgs e)
+    //{
+    //    throw new System.NotImplementedException();
+    //}
 
     private void BattleManager_OnCountdownStart(object sender, System.EventArgs e)
     {

@@ -6,12 +6,14 @@ public class MoveTargetIndicatorVisual : MonoBehaviour
 {
     SpriteRenderer spriteRenderer;
 
-    private const float fadeOutTime = 1.0f;
+    private const float fadeOutTime = 0.3f;
+    private float fadeOutPerSecond;
 
     // Start is called before the first frame update
     void Start()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        fadeOutPerSecond = 1.0f / fadeOutTime;
         Destroy(gameObject, fadeOutTime);
     }
 
@@ -22,7 +24,7 @@ public class MoveTargetIndicatorVisual : MonoBehaviour
             spriteRenderer.color.r,
             spriteRenderer.color.g,
             spriteRenderer.color.b,
-            spriteRenderer.color.a * (1f - (Time.deltaTime / fadeOutTime))
+            spriteRenderer.color.a - (Time.deltaTime * fadeOutPerSecond)
             );
     }
 }

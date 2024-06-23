@@ -2652,6 +2652,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   fullscreenOverlay: {fileID: 1163082763}
   countdownText: {fileID: 1265831411}
+  moveTargetIndicatorPrefab: {fileID: 588328153972298099, guid: 64cad19d96b1f16409ae9d2ce9ef4817, type: 3}
 --- !u!1 &1852568418
 GameObject:
   m_ObjectHideFlags: 0

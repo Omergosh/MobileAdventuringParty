@@ -28,10 +28,16 @@ public class BattleManager : MonoBehaviour
 {
     public static BattleManager Instance;
 
-    public event EventHandler<OnSelectedAdventurerChangedEventArgs> OnSelectedAdventurerChanged;
-    public class OnSelectedAdventurerChangedEventArgs : EventArgs { public AdventurerScript adventurer; }
     public event EventHandler OnCountdownStart;
     public event EventHandler OnCountdownEnd;
+    public event EventHandler<OnSelectedAdventurerChangedEventArgs> OnSelectedAdventurerChanged;
+    public class OnSelectedAdventurerChangedEventArgs : EventArgs { public AdventurerScript adventurer; }
+    public event EventHandler<OnCommandAdventurerMoveEventArgs> OnCommandAdventurerMove;
+    public class OnCommandAdventurerMoveEventArgs : EventArgs {
+        public AdventurerScript adventurer;
+        public Vector2 targetPosition;
+        // later refactor this with MoveToPositionCommand or something after Command pattern is implemented
+    }
 
     private int lastHitboxID;
 
@@ -134,6 +140,11 @@ public class BattleManager : MonoBehaviour
                     // Move currently selected adventurer to target location!
                     newPosition.z = adventurers[selectedAdventurerIndex].transform.position.z;
                     adventurers[selectedAdventurerIndex].SetMoveTargetPosition(newPosition);
+                    OnCommandAdventurerMove?.Invoke(this, new OnCommandAdventurerMoveEventArgs
+                    {
+                        adventurer = adventurers[selectedAdventurerIndex],
+                        targetPosition = newPosition
+                    });
                     break;
                 }
                 break;
