@@ -29,8 +29,10 @@ public class TouchManager : MonoBehaviour
     //public event EventHandler OnTouchHoldStart;
     //public event EventHandler OnTouchHoldRelease;
 
-    public Vector2 swipeStartPoint;
-    public Vector2 swipeEndPoint;
+    public Vector2 swipeStartPointWorld;
+    public Vector2 swipeEndPointWorld;
+    public Vector2 swipeStartPointScreen;
+    public Vector2 swipeEndPointScreen;
     [SerializeField] public Vector2 TouchMoveDelta { get; private set; }
     private float touchStartTime;
     private float touchEndTime;
@@ -41,7 +43,9 @@ public class TouchManager : MonoBehaviour
     // config
     public const float holdTimeThreshold = 0.4f; // anything less is a tap or swipe
     public const float holdCancelDistanceFromStartThreshold = 0.2f;
-    public const float minSwipeDistance = 1.5f;
+    public const float minSwipeDistance = 200f;
+    //public const float minSwipeDistanceWorld = 1.5f;
+    public const float swipeCameraPercentageThreshold = 0.05f;
     public const float directionThreshold = 0.9f;
 
     public static TouchManager Instance;
@@ -100,7 +104,8 @@ public class TouchManager : MonoBehaviour
 
     private void TouchPrimaryStart(InputAction.CallbackContext context)
     {
-        swipeStartPoint = GetTouchPosition2D();
+        swipeStartPointScreen = touchPositionAction.ReadValue<Vector2>();
+        swipeStartPointWorld = GetTouchPosition2D();
         TouchMoveDelta = Vector2.zero;
         touchStartTime = Time.time;
         touchStarted = true;
@@ -112,14 +117,17 @@ public class TouchManager : MonoBehaviour
 
     private void TouchPrimaryEnd(InputAction.CallbackContext context)
     {
-        swipeEndPoint = GetTouchPosition2D();
+        swipeEndPointScreen = touchPositionAction.ReadValue<Vector2>();
+        swipeEndPointWorld = GetTouchPosition2D();
         TouchMoveDelta = Vector2.zero;
         touchEndTime = Time.time;
         OnTouchEnd?.Invoke(this, EventArgs.Empty);
 
         if (touchEndTime - touchStartTime < holdTimeThreshold)
         {
-            if (Vector2.Distance(swipeStartPoint, swipeEndPoint) >= minSwipeDistance)
+            //Debug.Log(Vector2.Distance(swipeStartPointScreen, swipeEndPointScreen));
+            //if (Vector2.Distance(swipeStartPointScreen, swipeEndPointScreen) >= minSwipeDistance)
+            if (IsSwipeValid(swipeStartPointScreen, swipeEndPointScreen))
             {
                 // Swipe detected!
                 OnSwipe?.Invoke(this, EventArgs.Empty);
@@ -163,6 +171,30 @@ public class TouchManager : MonoBehaviour
     //    //Debug.Log(position);
     //}
 
+    public float GetCameraPercentageDistance(Vector2 start, Vector2 end)
+    {
+        // Used to test if a potential swipe is valid based on the distance traveled compared to current Camera size
+        float cameraDiagonal = Mathf.Sqrt(Mathf.Pow(Camera.main.scaledPixelWidth, 2) + Mathf.Pow(Camera.main.scaledPixelHeight, 2));
+        float screenDistancePixels = (end - start).magnitude;
+        float screenDistancePercentage = screenDistancePixels / cameraDiagonal;
+        //float screenDiffX = Mathf.Abs(start.x - end.x);
+        //float screenDiffY = Mathf.Abs(start.y - end.y);
+
+        // APPARENTLY not a reliable approach at all to try and get a physical screen size. Oh well.
+        //float screenDistancePixels = (end - start).magnitude;
+        //float screenDistancePhysical = screenDistancePixels / Screen.dpi;
+        //return screenDistancePhysical;
+
+        //Debug.Log(screenDistancePercentage);
+        return screenDistancePercentage;
+    }
+
+    public bool IsSwipeValid(Vector2 start, Vector2 end)
+    {
+        // Used to test if a potential swipe is valid based on the distance traveled compared to current Camera size
+        return GetCameraPercentageDistance(start, end) >= swipeCameraPercentageThreshold;
+    }
+
     public Vector3 GetTouchPosition()
     {
         Vector3 position = Camera.main.ScreenToWorldPoint(touchPositionAction.ReadValue<Vector2>());
@@ -178,7 +210,7 @@ public class TouchManager : MonoBehaviour
 
     public Vector2 GetSwipeDirection()
     {
-        return (swipeEndPoint - swipeStartPoint).normalized;
+        return (swipeEndPointWorld - swipeStartPointWorld).normalized;
     }
 
 }
