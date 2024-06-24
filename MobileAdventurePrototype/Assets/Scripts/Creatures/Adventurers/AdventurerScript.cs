@@ -14,7 +14,7 @@ public abstract class AdventurerScript : CreatureScript
 {
     public DashType dashType;
     protected float dashCooldownMax = 2f; // time after dash before another dash can occur. AKA dash cooldown max
-    protected float dashSpeed = 8f;
+    protected float dashSpeed = 10f;
     protected float dashDuration = 0.3f; //dashTimeSpentAtMaxSpeed
     protected float dashTimeCurrent; //dashTimeSpentAtMaxSpeed
 

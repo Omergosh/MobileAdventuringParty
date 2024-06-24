@@ -195,7 +195,6 @@ public class TouchManager : MonoBehaviour
 
     public bool IsTouchOverUI()
     {
-        //EventSystem.current.IsPointerOverGameObject(playerInput.GetInstanceID());
         if (EventSystem.current.IsPointerOverGameObject())
         {
             Debug.Log("tapped on UI");

@@ -42,6 +42,7 @@ public abstract class CreatureScript : MonoBehaviour, IHasHealthComponent
 {
 
     [SerializeField] private Collider2D hurtBox;
+    protected Rigidbody2D rigidbody;
 
     public event EventHandler OnHealthChanged;
     public event EventHandler OnDeath;
@@ -84,6 +85,11 @@ public abstract class CreatureScript : MonoBehaviour, IHasHealthComponent
     Transform targetToFollow;
     IHasHealthComponent targetToAttack;
 
+    private void Start()
+    {
+        rigidbody = GetComponent<Rigidbody2D>();
+    }
+
     private void FixedUpdate()
     {
         MoveTowardsUpdate();
@@ -109,9 +115,9 @@ public abstract class CreatureScript : MonoBehaviour, IHasHealthComponent
 
     protected void UpdateEndPhase()
     {
-        Vector3 positionChange = new Vector3(velocity.x, velocity.y) * Time.deltaTime;
-        //positionChange *= Time.deltaTime;
-        transform.position += positionChange;
+        //Vector3 positionChange = new Vector3(velocity.x, velocity.y) * Time.deltaTime;
+        //transform.position += positionChange;
+        rigidbody.velocity = velocity;
         if (velocity != Vector2.zero) { lastNonZeroDirection = Direction; }
 
         if (globalActionCooldownCurrent > 0f) { globalActionCooldownCurrent -= Time.deltaTime; }

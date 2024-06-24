@@ -136,15 +136,15 @@ public class BattleManager : MonoBehaviour
                 }
                 else
                 {
-                    // No new adventurer selected.
-                    // Move currently selected adventurer to target location!
-                    newPosition.z = adventurers[selectedAdventurerIndex].transform.position.z;
-                    adventurers[selectedAdventurerIndex].SetMoveTargetPosition(newPosition);
-                    OnCommandAdventurerMove?.Invoke(this, new OnCommandAdventurerMoveEventArgs
-                    {
-                        adventurer = adventurers[selectedAdventurerIndex],
-                        targetPosition = newPosition
-                    });
+                    //// No new adventurer selected.
+                    //// Move currently selected adventurer to target location!
+                    //newPosition.z = adventurers[selectedAdventurerIndex].transform.position.z;
+                    //adventurers[selectedAdventurerIndex].SetMoveTargetPosition(newPosition);
+                    //OnCommandAdventurerMove?.Invoke(this, new OnCommandAdventurerMoveEventArgs
+                    //{
+                    //    adventurer = adventurers[selectedAdventurerIndex],
+                    //    targetPosition = newPosition
+                    //});
                     break;
                 }
                 break;
@@ -160,17 +160,29 @@ public class BattleManager : MonoBehaviour
                 StartBattle();
                 break;
 
-                //case BattleState.BATTLING:
-                //    // Check if current touch started on top of the selected adventurer
-                //    Vector3 newPosition = TouchManager.Instance.GetTouchPosition();
-                //    Collider2D[] pressedAdventurers = Physics2D.OverlapPointAll(newPosition, selectableFieldEntities);
-                //    if (pressedAdventurers.Length > 0) { Debug.Log("tapped adv"); }
-
-                //    newPosition.z = adventurers[selectedAdventurerIndex].transform.position.z;
-                //    //adventurers[selectedAdventurerIndex].transform.position = newPosition;
-                //    adventurers[selectedAdventurerIndex].SetMoveTargetPosition(newPosition);
-                //    break;
+            case BattleState.BATTLING:
+                // Check if current touch started on top of the selected adventurer
+                if (TouchOverEmptySpace())
+                {
+                    // Move currently selected adventurer to target location!
+                    Vector3 newPosition = TouchManager.Instance.GetTouchPosition();
+                    newPosition.z = adventurers[selectedAdventurerIndex].transform.position.z;
+                    adventurers[selectedAdventurerIndex].SetMoveTargetPosition(newPosition);
+                    OnCommandAdventurerMove?.Invoke(this, new OnCommandAdventurerMoveEventArgs
+                    {
+                        adventurer = adventurers[selectedAdventurerIndex],
+                        targetPosition = newPosition
+                    });
+                }
+                break;
         }
+    }
+
+    public bool TouchOverEmptySpace()
+    {
+        Vector3 touchPosition = TouchManager.Instance.GetTouchPosition();
+        Collider2D[] pressedAdventurers = Physics2D.OverlapPointAll(touchPosition, selectableFieldEntities);
+        return pressedAdventurers.Length == 0;
     }
 
     private void OnDisable()
