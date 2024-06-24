@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 public class TouchManager : MonoBehaviour
@@ -99,11 +100,14 @@ public class TouchManager : MonoBehaviour
 
     private void TouchTapAction_performed(InputAction.CallbackContext obj)
     {
+        if (IsTouchOverUI()) { return; }
         OnTap?.Invoke(this, EventArgs.Empty);
     }
 
     private void TouchPrimaryStart(InputAction.CallbackContext context)
     {
+        if (IsTouchOverUI()) { return; }
+        
         swipeStartPointScreen = touchPositionAction.ReadValue<Vector2>();
         swipeStartPointWorld = GetTouchPosition2D();
         TouchMoveDelta = Vector2.zero;
@@ -187,6 +191,17 @@ public class TouchManager : MonoBehaviour
 
         //Debug.Log(screenDistancePercentage);
         return screenDistancePercentage;
+    }
+
+    public bool IsTouchOverUI()
+    {
+        //EventSystem.current.IsPointerOverGameObject(playerInput.GetInstanceID());
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            Debug.Log("tapped on UI");
+            return true;
+        }
+        return false;
     }
 
     public bool IsSwipeValid(Vector2 start, Vector2 end)
